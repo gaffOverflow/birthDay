@@ -63,12 +63,15 @@
       .fuego {
         border-radius: 100%;
         position: absolute;
-        top: -20px;
+        top: -28px;
         left: 50%;
-        margin-left: -2.6px;
-        width: 6.66666667px;
-        height: 18px;
+        margin-left: -5px;
+        width: 12px;
+        height: 30px;
+        background: rgba(255, 180, 0, 0.9);
+        box-shadow: 0 0 25px 10px rgba(255, 200, 50, 0.8);
       }
+
       .fuego:nth-child(1) {
         animation: fuego 2s 6.5s infinite;
       }
@@ -87,18 +90,35 @@
 
       /* ============================================== Animation Fire
 */
-
       @keyframes fuego {
-        0%,
-        100% {
-          background: rgba(254, 248, 97, 0.5);
-          box-shadow: 0 0 40px 10px rgba(248, 233, 209, 0.2);
-          transform: translateY(0) scale(1);
+        0% {
+          transform: translate(-3px, 0) scale(1.2);
+          background: rgba(255, 200, 0, 0.9);
+          box-shadow: 0 0 40px 20px rgba(255, 150, 0, 0.9);
         }
+
+        25% {
+          transform: translate(4px, -5px) scale(1.1);
+          background: rgba(255, 150, 0, 0.8);
+          box-shadow: 0 0 50px 25px rgba(255, 180, 60, 0.9);
+        }
+
         50% {
-          background: rgba(255, 50, 0, 0.1);
-          box-shadow: 0 0 40px 20px rgba(248, 233, 209, 0.2);
-          transform: translateY(-20px) scale(0);
+          transform: translate(-5px, -10px) scale(1);
+          background: rgba(255, 90, 0, 0.6);
+          box-shadow: 0 0 60px 30px rgba(255, 160, 50, 0.8);
+        }
+
+        75% {
+          transform: translate(3px, -5px) scale(1.1);
+          background: rgba(255, 180, 0, 0.8);
+          box-shadow: 0 0 50px 25px rgba(255, 190, 60, 0.9);
+        }
+
+        100% {
+          transform: translate(-3px, 0) scale(1.2);
+          background: rgba(255, 200, 0, 0.9);
+          box-shadow: 0 0 40px 20px rgba(255, 150, 0, 0.9);
         }
       }
 
@@ -118,9 +138,48 @@
           font-size: 1.4em;
         }
       }
+
+      .fireworks {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background: transparent;
+        overflow: hidden;
+        z-index: 999;
+      }
+
+      .spark {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: red;
+        animation: explode 1s ease-out forwards;
+      }
+
+      @keyframes explode {
+        0% {
+          transform: scale(0) translate(0, 0);
+          opacity: 1;
+        }
+
+        100% {
+          transform: scale(1) translate(var(--x), var(--y));
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body>
+    <!-- Fireworks container -->
+    <div class="fireworks" id="fireworks"></div>
+
+    <!-- Audio element -->
+    <audio id="firework-audio" src="fireworks.mp3"></audio>
+
     <div class="velas">
       <div class="fuego"></div>
       <div class="fuego"></div>
@@ -359,8 +418,128 @@
       <rect x="10" y="475.571" fill="#fefae9" width="180" height="4" />
     </svg>
     <div class="text">
-      <h1>Happy Birthday!</h1>
-      <p>Nimi 💝</p>
+      <p>
+        Blow air towards your microphone to blow out the candle flame and make a
+        wish!
+      </p>
     </div>
+    <div id="birthday-message" class="text" style="display: none">
+      <h1>Happy Birthday! Nimi 💝</h1>
+      <p>May all your wishes come true!</p>
+    </div>
+    <div id="nimi-message" class="text" style="display: none">
+      <p>From: Ife to you</p>
+    </div>
+
+    <script>
+      const flames = document.querySelectorAll(".fuego");
+      let flameIsActive = true;
+
+      // Function to simulate the flame blowing out
+      function blowOutFlame() {
+        flames.forEach((f) => {
+          f.style.transition = "opacity 0.3s ease-out, transform 0.3s ease-out";
+          f.style.opacity = "0";
+          f.style.transform = "scale(0)";
+          f.style.boxShadow = "none";
+        });
+        flameIsActive = false;
+
+        // Hide instruction text
+        document.querySelector(".text p").style.display = "none";
+
+        // Show birthday messages
+        document.getElementById("birthday-message").style.display = "block";
+        document.getElementById("nimi-message").style.display = "block";
+
+        // Start fireworks and play audio after flame blows out
+        fireworkAudio.play();
+        setInterval(launchFirework, 300);
+      }
+
+      // Function to relight the flame
+      function relightFlame() {
+        flames.forEach((f) => {
+          f.style.transition = "opacity 0.5s ease-in, transform 0.5s ease-in";
+          f.style.opacity = "1";
+          f.style.transform = "scale(1)";
+        });
+        flameIsActive = true;
+      }
+
+      // Flickering logic (will stop if blown out)
+      function flickerFlame(flame) {
+        if (!flameIsActive) return;
+        const intensity = Math.random() * 0.6 + 0.4;
+        const scale = Math.random() * 0.3 + 0.9;
+        const blur = Math.random() * 10 + 10;
+
+        flame.style.opacity = intensity.toFixed(2);
+        flame.style.transform = `scale(${scale.toFixed(2)})`;
+        flame.style.boxShadow = `0 0 ${blur}px rgba(255, 200, 50, 0.7)`;
+      }
+
+      function animateFlames() {
+        flames.forEach(flickerFlame);
+        requestAnimationFrame(animateFlames);
+      }
+
+      animateFlames();
+
+      // Setup mic input
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then((stream) => {
+          const audioCtx = new (window.AudioContext ||
+            window.webkitAudioContext)();
+          const source = audioCtx.createMediaStreamSource(stream);
+          const analyser = audioCtx.createAnalyser();
+          const dataArray = new Uint8Array(analyser.fftSize);
+          source.connect(analyser);
+
+          function detectBlow() {
+            analyser.getByteTimeDomainData(dataArray);
+            let sum = 0;
+
+            for (let i = 0; i < dataArray.length; i++) {
+              const deviation = dataArray[i] - 128;
+              sum += deviation * deviation;
+            }
+
+            const rms = Math.sqrt(sum / dataArray.length);
+
+            if (rms > 50 && flameIsActive) {
+              blowOutFlame();
+            } else if (rms < 10 && !flameIsActive) {
+              relightFlame();
+            }
+
+            requestAnimationFrame(detectBlow);
+          }
+
+          detectBlow();
+        })
+        .catch((err) => {
+          console.log("Microphone access denied or error:", err);
+        });
+
+      // --- Fireworks logic ---
+      const fireworks = document.getElementById("fireworks");
+      const fireworkAudio = document.getElementById("firework-audio");
+
+      function launchFirework() {
+        const spark = document.createElement("div");
+        spark.className = "spark";
+        spark.style.left = Math.random() * 100 + "%";
+        spark.style.top = Math.random() * 100 + "%";
+        spark.style.setProperty("--x", `${(Math.random() - 0.5) * 200}px`);
+        spark.style.setProperty("--y", `${(Math.random() - 0.5) * 200}px`);
+        fireworks.appendChild(spark);
+
+        setTimeout(() => {
+          fireworks.removeChild(spark);
+        }, 1000);
+      }
+    </script>
   </body>
 </html>
