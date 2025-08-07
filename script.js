@@ -5,7 +5,7 @@
     day = hour * 24;
 
   const now = new Date();
-  const birthday = new Date(now.getTime() + 30 * 60 * 1000).getTime(); // 30 minutes from now
+  const birthday = new Date(now.getTime() + 6 * 60 * 1000).getTime(); // 30 minutes from now
 
   const countDown = birthday;
 
