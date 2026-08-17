@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Heartfelt Msgs To You</title>
+    <style>
+      @import url("//fonts.googleapis.com/css?family=Inconsolata:700");
+
+      body {
+        background-color: #111;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        height: 100vh;
+      }
+      p {
+        font-family: Inconsolata, source code pro, consolas, monospace;
+        margin-left: 50%;
+        transform: translateX(-6em);
+        font-size: 24px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      const prefix = "Bleh Bleh, ";
+      const skills = [
+        "Wishing you a day filled with laughter, love, and everything you enjoy most.",
+        " Here's My Message for you.",
+        " I'd like to recount to the first day I met you",
+        "A day that started so regular with not much expectation.",
+        "But little did I know it's going to be the Day I'll be the happiest",
+        "I became the happiest version of myself, and that's all thanks to you",
+        "I knew I bagged a good one. Should I start from your smiles?",
+        "You smile so bright, it's almost infectious",
+        "You Beauty? No one comes close... You know too, you just like to comfort people by saying you're an old-taker",
+        "You body?... My Panla 🥰, I can't stop thinking about it",
+        "If I keep going, I won't stop",
+        "Oh, I must say this before I stop, change your ways and stop coming late",
+        "Oh My God!!!, Your Mindset 🙌, Fucking smart. It makes me you can become whatever you lock your mind on",
+        "Stop listening to smiling to Okada riders",
+        "I know I don't throw words LOVE around anyhow",
+        "But I deeply ADORE you",
+      ].map((s) => `${s}.`);
+      const delay = 2;
+      const step = 1;
+      const tail = 10;
+      const timeout = 25;
+
+      const p = document.createElement("p");
+      document.body.appendChild(p);
+
+      const colors = ["red", "green", "blue", "yellow", "cyan", "magenta"];
+      function getRandomColor() {
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
+      function getRandomChar() {
+        return String.fromCharCode(Math.random() * (127 - 33) + 33);
+      }
+      function getRandomColoredString(n) {
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < n; i++) {
+          const char = document.createElement("span");
+          char.textContent = getRandomChar();
+          char.style.color = getRandomColor();
+          fragment.appendChild(char);
+        }
+        return fragment;
+      }
+
+      const $ = {
+        text: "",
+        prefixP: -tail,
+        skillI: 0,
+        skillP: 0,
+        direction: "forward",
+        delay,
+        step,
+      };
+
+      function render() {
+        const skill = skills[$.skillI];
+
+        if ($.step) {
+          $.step--;
+        } else {
+          $.step = step;
+          if ($.prefixP < prefix.length) {
+            if ($.prefixP >= 0) {
+              $.text += prefix[$.prefixP];
+            }
+            $.prefixP++;
+          } else {
+            if ($.direction === "forward") {
+              if ($.skillP < skill.length) {
+                $.text += skill[$.skillP];
+                $.skillP++;
+              } else {
+                if ($.delay) {
+                  $.delay--;
+                } else {
+                  $.direction = "backward";
+                  $.delay = delay;
+                }
+              }
+            } else {
+              if ($.skillP > 0) {
+                $.text = $.text.slice(0, -1);
+                $.skillP--;
+              } else {
+                $.skillI = ($.skillI + 1) % skills.length;
+                $.direction = "forward";
+              }
+            }
+          }
+        }
+
+        p.textContent = $.text;
+        p.appendChild(
+          getRandomColoredString(
+            $.prefixP < prefix.length
+              ? Math.min(tail, tail + $.prefixP)
+              : Math.min(tail, skill.length - $.skillP)
+          )
+        );
+        setTimeout(render, timeout);
+      }
+      setTimeout(render, 500);
+    </script>
+  </body>
+</html>
